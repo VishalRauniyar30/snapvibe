@@ -55,16 +55,36 @@ export async function saveUserToDB(user: {
 }
 
 
-export async function signInAccount (user: { email: string; password: string }) {
+export async function signInAccount(user: {email: string; password: string}) {
     try {
-        await account.deleteSession('current')
-        const session = await account.createEmailPasswordSession(user.email, user.password)
+        // Check for existing session
+        let sessionExists = false
+        try {
+            const currentSession = await account.getSession('current');
+            if (currentSession) {
+                sessionExists = true
+            }
+        } catch {
+            sessionExists = false
+        }
 
+        if (sessionExists) {
+        // Option 1: Use existing session - no need to delete or create a new session
+        // return currentSession;
+
+        // Option 2: Or explicitly delete previous session before creating a new one
+            await account.deleteSession('current')
+        }
+
+        // Create new session
+        const session = await account.createEmailPasswordSession(user.email, user.password)
         return session
     } catch (error) {
-        console.log(error)        
+        console.log(error)
+        throw error
     }
 }
+
 
 export async function getAccount() {
     try {
