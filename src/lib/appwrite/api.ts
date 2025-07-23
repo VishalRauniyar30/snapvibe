@@ -57,7 +57,7 @@ export async function saveUserToDB(user: {
 
 export async function signInAccount (user: { email: string; password: string }) {
     try {
-        // await account.deleteSession('current')
+        await account.deleteSession('current')
         const session = await account.createEmailPasswordSession(user.email, user.password)
 
         return session
